@@ -7,8 +7,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Sparkles, Share2, RefreshCw, ChevronLeft, Send, 
-  X, AlertTriangle, ShieldCheck, HelpCircle, ArrowRight, CornerDownLeft
+  Sparkles, Share2, RefreshCw, ChevronLeft, Send,
+  X, AlertTriangle, ShieldCheck
 } from 'lucide-react';
 import { getProfile, mbtiColorSchema } from '../data/matching';
 import MBTIAvatar from '../components/MBTIAvatar';

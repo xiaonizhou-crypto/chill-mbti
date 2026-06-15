@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Sparkles, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 import { questions, calculateMBTI } from '../data/questions';
 import QuestionIllustration from '../components/QuestionIllustration';
 
