@@ -39,7 +39,7 @@ export default function Result() {
       setMessages([
         {
           role: 'model',
-          content: `✨ 嗨！我是你的 AI 职业顾问 **Chill**。\n\n恭喜你解锁了 **${userProfile.type} ${userProfile.name}** 的职场契合报告。\n\n我已经为你准备好了在面对不同风格管理者时的沟通技巧。你想知道在面试中怎么盘问并辨别出符合你期待的老板吗？或者对日常博弈、防 PUA 有什么疑问，尽管跟我聊聊！`
+          content: `嗨！我是你的 AI 职业顾问 Chill。\n\n恭喜你解锁了 ${userProfile.type} ${userProfile.name} 的职场契合报告。\n\n我已经为你准备好了在面对不同风格管理者时的沟通技巧。你想知道在面试中怎么盘问并辨别出符合你期待的老板吗？或者对日常博弈、防 PUA 有什么疑问，尽管跟我聊聊！`
         }
       ]);
     }
