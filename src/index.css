@@ -1,0 +1,34 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;850&family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --shadow-2sm: 0 2px 6px rgba(0, 0, 0, 0.035);
+  --shadow-3sm: 0 1px 2px rgba(0, 0, 0, 0.02);
+
+  /* Material and modern color selections */
+  --color-neutral-850: #20202b;
+  --color-neutral-955: #1c1c2e;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f4f4f6;
+  overscroll-behavior-y: contain;
+}
+
+/* Utility to hide horizontal scrollbar */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
