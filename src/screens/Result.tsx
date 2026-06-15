@@ -3,89 +3,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Sparkles, Share2, RefreshCw, ChevronLeft, Send,
-  X, AlertTriangle, ShieldCheck
+import {
+  Sparkles, Share2, RefreshCw, ChevronLeft,
+  AlertTriangle, ShieldCheck
 } from 'lucide-react';
 import { getProfile, mbtiColorSchema } from '../data/matching';
 import MBTIAvatar from '../components/MBTIAvatar';
-import PufferfishLogo from '../components/PufferfishLogo';
-
-interface ChatMessage {
-  role: 'user' | 'model';
-  content: string;
-}
 
 export default function Result() {
   const { type = 'INFP' } = useParams<{ type: string }>();
   const userProfile = getProfile(type);
   const userGroupColor = mbtiColorSchema[userProfile.group];
 
-  // AI Chat drawer state
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isSending, setIsSending] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Initialize chat introduction
-  useEffect(() => {
-    if (isChatOpen && messages.length === 0) {
-      setMessages([
-        {
-          role: 'model',
-          content: `嗨！我是你的 AI 职业顾问 Chill。\n\n恭喜你解锁了 ${userProfile.type} ${userProfile.name} 的职场契合报告。\n\n我已经为你准备好了在面对不同风格管理者时的沟通技巧。你想知道在面试中怎么盘问并辨别出符合你期待的老板吗？或者对日常博弈、防 PUA 有什么疑问，尽管跟我聊聊！`
-        }
-      ]);
-    }
-  }, [isChatOpen, type, userProfile]);
-
-  // Auto-scroll inside chat
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isSending]);
-
-  // Send message to Express API
-  const handleSendMessage = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!inputValue.trim() || isSending) return;
-
-    const userMsg = inputValue;
-    setInputValue('');
-    setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
-    setIsSending(true);
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userMessage: userMsg,
-          mbtiType: userProfile.type,
-          history: messages
-        })
-      });
-
-      const data = await response.json();
-      if (data.reply) {
-        setMessages(prev => [...prev, { role: 'model', content: data.reply }]);
-      } else if (data.error) {
-        setMessages(prev => [...prev, { role: 'model', content: `⚠️ ${data.error}` }]);
-      } else {
-        setMessages(prev => [...prev, { role: 'model', content: "Chill 正在开个小差，请稍后再试呀。" }]);
-      }
-    } catch (err) {
-      console.error(err);
-      setMessages(prev => [...prev, { role: 'model', content: "网络稍微有一点点卡，请重试。" }]);
-    } finally {
-      setIsSending(false);
-    }
-  };
 
   // Copy share info
   const handleShare = () => {
@@ -341,144 +273,6 @@ export default function Result() {
         </div>
       </div>
 
-      {/* CHILL AI BOT BOTTOM SHEET DRAWER */}
-      <AnimatePresence>
-        {isChatOpen && (
-          <>
-            {/* Backdrop lock */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsChatOpen(false)}
-              className="fixed inset-0 bg-neutral-950 z-40 transition-opacity"
-            />
-
-            {/* Bottom sheet */}
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl z-50 flex flex-col h-[85vh]"
-              id="chill-chat-drawer"
-            >
-              {/* Drawer Header */}
-              <div className="px-5 py-4 border-b border-neutral-100 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center overflow-hidden border border-neutral-200 shadow-2sm">
-                    <PufferfishLogo size={32} animated={false} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-neutral-900 flex items-center gap-1.5">
-                      与 AI 职业顾问 Chill 深度对话
-                    </h4>
-                    <p className="text-[10px] text-neutral-400 font-medium">精通老板心理、面试对垒、防PUA博弈</p>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => setIsChatOpen(false)}
-                  className="p-1.5 hover:bg-neutral-100 text-neutral-400 hover:text-neutral-700 rounded-full transition-colors"
-                  aria-label="关闭对话"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Chat messages scrollable content */}
-              <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-neutral-50" id="dialog-contents">
-                {messages.map((msg, i) => {
-                  const isModel = msg.role === 'model';
-                  return (
-                    <div 
-                      key={i} 
-                      className={`flex ${isModel ? 'justify-start' : 'justify-end'}`}
-                    >
-                      <div 
-                        className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-3sm whitespace-pre-wrap font-sans ${
-                          isModel 
-                            ? 'bg-white text-neutral-800 border border-neutral-200/70' 
-                            : 'bg-neutral-900 text-white'
-                        }`}
-                      >
-                        {msg.content}
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Loading state indicator */}
-                {isSending && (
-                  <div className="flex justify-start">
-                    <div className="bg-white border border-neutral-200/70 max-w-[85%] rounded-2xl px-4 py-3 flex items-center gap-1 text-xs text-neutral-400 shadow-3sm">
-                      <div className="flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <span className="w-1.5 h-1.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <span className="w-1.5 h-1.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </div>
-                      <span className="ml-1.5 text-[10px] font-sans">Chill 正在用大模型深度对垒分析...</span>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Quick suggestion prompt pills */}
-              <div className="bg-white px-4 py-2 border-t border-neutral-100 overflow-x-auto whitespace-nowrap flex gap-2 scrollbar-none">
-                <button
-                  onClick={() => {
-                    setInputValue(`在面试中，作为 ${userProfile.type}，我应该怎么向面试官提问，看出他是不是属于控制狂老板？`);
-                  }}
-                  className="text-[10px] font-medium border border-neutral-200 text-neutral-600 bg-neutral-50 hover:bg-neutral-100 rounded-full px-3 py-1.5 transition-colors duration-150 shrink-0"
-                >
-                  🤔 面试如何鉴别老板风格？
-                </button>
-                <button
-                  onClick={() => {
-                    setInputValue(`如果我的老板刚好最不契合，是 [你最怕的老板]，我该如何日常相处并保持 Chill？`);
-                  }}
-                  className="text-[10px] font-medium border border-neutral-200 text-neutral-600 bg-neutral-50 hover:bg-neutral-100 rounded-full px-3 py-1.5 transition-colors duration-150 shrink-0"
-                >
-                  🤝 如何与不和的老板日常斗智斗勇？
-                </button>
-                <button
-                  onClick={() => {
-                    setInputValue(`请分析我的前三大优势，在什么具体职场情境下最容易被优秀的老板重用，大放异彩？`);
-                  }}
-                  className="text-[10px] font-medium border border-neutral-200 text-neutral-600 bg-neutral-50 hover:bg-neutral-100 rounded-full px-3 py-1.5 transition-colors duration-150 shrink-0"
-                >
-                  📈 我的三大优势如何最大化变现？
-                </button>
-              </div>
-
-              {/* Chat Input form */}
-              <form 
-                onSubmit={handleSendMessage}
-                className="p-4 border-t border-neutral-100 bg-white flex items-center gap-2.5"
-              >
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="想知道关于你和老板匹配度的任何事？输入..."
-                  disabled={isSending}
-                  className="flex-1 text-xs border border-neutral-250 hover:border-neutral-400 focus:border-neutral-900 rounded-xl px-4 py-3.5 focus:outline-none disabled:bg-neutral-50 disabled:text-neutral-400 font-sans"
-                />
-                
-                <button
-                  type="submit"
-                  disabled={!inputValue.trim() || isSending}
-                  className="p-3 bg-neutral-900/95 text-white disabled:bg-neutral-200 disabled:text-neutral-400 rounded-xl transition-colors shrink-0 shadow-sm"
-                  aria-label="发送消息"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </form>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
