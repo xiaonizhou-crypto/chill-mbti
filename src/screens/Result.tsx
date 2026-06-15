@@ -297,13 +297,24 @@ export default function Result() {
 
         {/* SECTION 4: ACTIONS */}
         <div className="space-y-3 pt-4">
-          <button
-            onClick={() => setIsChatOpen(true)}
-            className="flex items-center justify-center w-full gap-2 px-6 py-4 text-sm font-semibold text-white bg-neutral-900 rounded-xl shadow-md hover:bg-neutral-800 transition-colors"
-            id="btn-chat-advisor"
+          <a
+            href={`https://claw-h5-production-2e3c.up.railway.app/#/c/onboard?mbti=${userProfile.type}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-full gap-2 px-6 py-4 text-sm font-semibold text-white bg-neutral-900 rounded-xl shadow-md hover:bg-neutral-800 transition-colors no-underline"
+            id="btn-get-agent"
           >
             <Sparkles className="w-4 h-4 text-amber-300" />
-            想找到这样的老板？和 Chill 聊聊
+            领取你的专属求职 Agent
+          </a>
+
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className="flex items-center justify-center w-full gap-2 px-6 py-4 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-xl hover:bg-neutral-50 transition-colors"
+            id="btn-chat-advisor"
+          >
+            <Sparkles className="w-4 h-4 text-violet-500" />
+            先和 Chill 聊聊看
           </button>
 
           <button
